@@ -141,6 +141,27 @@ Yeni native modul (libsignal binding, platform API wrapper) -> `expo:expo-module
 
 EAS disinda GH-hosted simulator/emulator build -> `github-actions` (Callstack).
 
+### Jira MCP hard delete desteklemez
+- **Tarih:** 2026-04-22
+- **Konu:** Infra / Jira
+- **Detay:** `plugin:atlassian:atlassian` MCP server'da `deleteIssue` yok. `transitionJiraIssue` sadece 3 hedef var: Yapılacaklar (11), Devam Ediyor (21), Tamam (31). "Cancelled" veya "Archived" statusu workflow'ta tanimli degil. Yanlislikla yaratilan duplicate/test ticket'i gercekten silinmek istenirse Jira UI'dan manuel silinir.
+- **Cozum/Onlem:** Gereksiz ticket'lar **soft-archive** olarak "Tamam" statusune cekilir (id=31). Summary + description korunur, kullanici sonradan hard delete yapabilir. Her soft-archive islemi kullaniciya raporlanir.
+- **Architecture referans:** n/a (process)
+
+### Jira description'inda newline escape sorunu
+- **Tarih:** 2026-04-22
+- **Konu:** Infra / Jira
+- **Detay:** `createJiraIssue` / `editJiraIssue` cagrilarinda `contentFormat: markdown` ile gonderilen description icindeki `\n\n` paragraf ayiricilari bazen literal `\\n\\n` olarak saklaniyor (ADF donusum layer'inda escape dogru cozulmuyor). Jira UI'da metni okumaya ragmen garip gorunuyor.
+- **Cozum/Onlem:** Description'lari **tek paragraf** olarak yaz, gercek newline kullanma. Cok bolumlu aciklama icin ya `contentFormat: adf` ile explicit ADF paragraph block gonder, ya ayri ticket olarak parcala. 2026-04-22 audit'inde 31 ticket'ta bu sorun bulundu ve single-paragraph formata cevrildi.
+- **Architecture referans:** n/a (process)
+
+### Jira ticket olustururken parent Epic zorunlu
+- **Tarih:** 2026-04-22
+- **Konu:** Infra / Jira
+- **Detay:** Hikaye/Görev create ederken `parent` field'i atlanirsa ticket orphan olur (hicbir Epic altinda degil), backlog view'da gorunmez. 2026-04 audit'inde 12 bos Epic + 10 duplicate ticket bu yuzden uretilmisti.
+- **Cozum/Onlem:** Her `createJiraIssue` cagrisinda `parent: "MEK-NN"` alanini set et. Uygun Epic secmek icin `.docs/JIRA.md > Epic haritasi` kullanilir. Yeni Epic gerekirse once `issueTypeName: "Epik"` ile olustur.
+- **Architecture referans:** n/a (process)
+
 ---
 
 _(Kayitlar bu cizgiden sonra eklenir.)_

@@ -7,6 +7,8 @@
 - Turkce karakter uyumu tum katmanlarda dogrulanir
 - Event sourcing + local-first + per-chat chat_seq mimarisi ihlal edilmez
 - Plaintext server'a sizdirilmaz, plaintext loglanmaz
+- **Jira sorumlulugu:** Her agent ise baslamadan Jira'daki ilgili MEK ticket'ini **Devam Ediyor**'a (transition id=21) cevirir; bitirince **Tamam**'a (id=31) cevirir. Blocker varsa `addCommentToJiraIssue` ile yorum ekler. Is bittiginde `addWorklogToJiraIssue` ile zamani kaydeder. Detay: `.docs/JIRA.md`.
+- **Git sorumlulugu:** Her agent yeni is icin `feature/MEK-NNN-kisa-aciklama` branch'i acar (master'a direkt commit yok), commit mesajlari `feat(MEK-NNN): ...` / `fix(MEK-NNN): ...` formatinda, PR title `[MEK-NNN] ...`, merge stratejisi squash-and-merge. Detay: `.docs/GIT.md`.
 
 ## Erisim matrisi
 

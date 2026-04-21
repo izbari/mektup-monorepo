@@ -27,12 +27,12 @@ Claude Code oturumunda:
 ## 2) Yeni feature baslatma
 
 1. **Toplanti -> MEETING:** `meeting-agent` ile transkripti `.docs/meetings/MEETING-NNN.md`'ye cevir. Acik soru/musteri kisiti varsa `CONSTITUTION.md`'ye eklet.
-2. **Spec:** `/speckit.specify` -> `.specify/specs/NNN-feature/spec.md`
+2. **Spec:** `/speckit.specify` -> `.specify/specs/NNN-feature/spec.md`. **Jira**'da uygun Epic altinda ilgili MEK-NNN ticket'i bul veya olustur (`.docs/JIRA.md > Epic haritasi`).
 3. **Clarify:** `/speckit.clarify` ile belirsizlikleri kapat.
 4. **Plan:** `/speckit.plan` -> solution-architect teknik plan + DTO/contract yazar. `.docs/contracts/` guncellenir.
 5. **Analyze:** `/speckit.analyze` ile tutarlilik.
-6. **Tasks:** `/speckit.tasks` -> domain basli is paketleri.
-7. **Implement:** domain agent (`mobile-agent` / `web-agent` / `backend-agent` / `core-agent`) task'i alir.
+6. **Tasks:** `/speckit.tasks` -> domain basli is paketleri. Her task bir MEK ticket'ina eslesir.
+7. **Implement:** domain agent (`mobile-agent` / `web-agent` / `backend-agent` / `core-agent`) task'i alir. **Baslarken Jira ticket `Devam Ediyor`'a (id=21), bitirince `Tamam`'a (id=31) transition edilir.**
 
 ## 3) Kod yazma kurallari
 
@@ -47,8 +47,9 @@ Claude Code oturumunda:
 - Component: `PascalCase`
 - Hook: `useXxx`
 - Event type: `domain.action` (`message.send`, `reaction.add`)
-- Branch: `feature/NNN-kisa-aciklama` / `fix/NNN-aciklama`
-- Commit: conventional commits, Turkce body: `feat(NNN): mesaj gonderme retry queue`
+- Branch: `feature/MEK-NNN-kisa-aciklama` / `fix/MEK-NNN-aciklama` (NNN Jira ticket numarasi)
+- Commit: conventional commits, Turkce body: `feat(MEK-190): mesaj gonderme retry queue exponential backoff`
+- PR title: `[MEK-NNN] <imperative Turkce aciklama>`
 
 ### Testing
 - Yeni kod test edilir — `packages/core` coverage > %90, diger paketler > %70
@@ -82,16 +83,16 @@ pnpm --filter @mektup/server supabase:reset   # migration'lari bastan uygula
 ## 6) Commit + PR
 
 ```bash
-# Commit
+# Commit (her commit MEK ticket referansli)
 # (commit-commands plugin aktif; /commit komutu da kullanilabilir)
-git commit -m "feat(NNN): mesaj gonderme worker exponential backoff"
+git commit -m "feat(MEK-190): mesaj gonderme worker exponential backoff"
 
 # Push + PR
-git push -u origin feature/NNN-kisa-aciklama
+git push -u origin feature/MEK-190-mesaj-gonderme-worker
 # gh pr create veya /commit-push-pr
 ```
 
-PR title kisa ve imperative (Turkce). Body: neyi + neden (CONSTITUTION/architecture referans) + nasil test edildi + breaking mi.
+PR title: `[MEK-NNN] <imperative Turkce aciklama>`. Body: neyi + neden (CONSTITUTION/architecture referans) + `Jira: MEK-NNN` satiri + nasil test edildi + breaking mi.
 
 ## 7) Kapatma
 
@@ -102,6 +103,7 @@ PR title kisa ve imperative (Turkce). Body: neyi + neden (CONSTITUTION/architect
 - [ ] Mimari karar varsa `CONSTITUTION.md > Mimari kararlar` guncel
 - [ ] CR varsa `CHANGES.md` guncel
 - [ ] Feature parity checklist etkilendiyse isaretli
+- [ ] **Jira MEK-NNN ticket'i `Tamam` (id=31) statusunde**
 
 ## 8) Yaygin tuzaklar
 
@@ -112,5 +114,7 @@ PR title kisa ve imperative (Turkce). Body: neyi + neden (CONSTITUTION/architect
 - **Mimari detay:** `mektup_architecture.md` (section numaralari referans)
 - **Is akisi:** `.docs/WORKFLOW.md`
 - **Agent sinirlari:** `.docs/AGENTS.md`
+- **Jira:** `.docs/JIRA.md` (Epic haritasi + ticket lifecycle + worklog)
+- **Git:** `.docs/GIT.md` (branch, commit, PR, merge standardi)
 - **Test:** `.docs/TESTPLAN.md`
 - **Kararlar:** `.docs/CONSTITUTION.md`
