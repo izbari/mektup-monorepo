@@ -1,0 +1,29 @@
+﻿# API key'ler repo'ya girmez
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.example.json
+**/.env
+**/.env.*
+
+# Firebase service account (prod'da Secret Manager / runtime mount edilmeli)
+**/firebase_credentials.json
+**/firebase-credentials.json
+**/firebase-*.json
+
+# Build ciktilari
+**/bin/
+**/obj/
+**/dist/
+**/.angular/
+**/node_modules/
+
+# IDE
+.vs/
+.vscode/settings.json
+*.user
+
+# Agent local memory (kisisel, repo'ya girmez)
+.claude/agent-memory-local/
+
+# MCP konfigurasyon (API key iceriyor, repo'ya girmez)
+.mcp.json
