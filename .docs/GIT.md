@@ -2,15 +2,41 @@
 
 Git uzerinde yapilan her is bu standarda uyar. Temel amac: her commit bir Jira MEK ticket'ina baglidir, master'a merge edilmeden once review + test gecer, gecmis okunabilir kalir.
 
-## Base ve remote'lar
+## Base ve remote'lar (dual-host)
 
 | Alan | Deger |
 |------|-------|
 | Default branch | `master` |
-| Primary remote | `origin` (GitHub) |
-| Mirror remote | `bitbucket` (yedek) |
+| Birincil remote (PR + review) | `origin` → `https://github.com/izbari/mektup-monorepo.git` |
+| Mirror remote (Atlassian ekosistemi sync) | `bitbucket` → `git@bitbucket.org:mektupworkspace/mektup-monorepo.git` |
 
 `master`'a **dogrudan push yasak** (hotfix disinda, asagida). Tum degisiklikler feature branch + PR uzerinden gider.
+
+### Dual-push konfigurasyonu
+
+`origin` remote'u iki URL'ye birden push edecek sekilde konfigure edilmistir — tek `git push origin <branch>` komutu hem GitHub hem Bitbucket'a gider, iki remote sync kalir:
+
+```bash
+git remote set-url --add --push origin https://github.com/izbari/mektup-monorepo.git
+git remote set-url --add --push origin git@bitbucket.org:mektupworkspace/mektup-monorepo.git
+```
+
+Dogrulama: `git config --get-all remote.origin.pushurl` her iki URL'yi listelemeli.
+
+`fetch` hala sadece GitHub'dan (birincil). Bitbucket yalnizca push hedefidir.
+
+### PR akisi (dual-host)
+
+- **Birincil PR:** GitHub'da `gh pr create` ile otomatik acilir, review + merge burada yapilir.
+- **Ikincil PR (Bitbucket):** Tarayicida manuel olarak acilabilir — link `git push` ciktisinda veya `https://bitbucket.org/mektupworkspace/mektup-monorepo/pull-requests/new?source=<branch>` formatinda. Zorunlu degil; iz birakma veya Atlassian entegrasyonu gerekli ise acilir.
+- **Merge:** Sadece GitHub'da squash-merge. Bitbucket'ta PR varsa, GitHub merge sonrasi branch master'a gectigi icin otomatik "merged" goruntusu alir (veya manuel decline).
+- **Master sync:** GitHub'da merge olunca `git pull origin master && git push origin master` ile iki remote'a yayilir.
+
+### Bitbucket ozel kurallari
+
+- SSH key ile auth (`git@bitbucket.org`). HTTPS kullanilmaz — Atlassian app password yonetimi daha riskli.
+- `bitbucket` remote sadece git sync'i icin. Issue takibi **Jira'da** (`.docs/JIRA.md`). Bitbucket issue paneli kullanilmaz.
+- Bitbucket Cloud bir yedek host olarak tutulur (GitHub outage veya hesap sorunu durumunda hizli tasima).
 
 ## Branch isimlendirme
 
