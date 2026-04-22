@@ -161,6 +161,8 @@ mektup-monorepo/
 | 2026-04-21 | Firebase reddedildi | Firestore cikis migrasyonu her query rewrite gerektirir |
 | 2026-04-21 | Realm reddedildi | RN version-coupled native modul + Atlas Sync vendor lock |
 | 2026-04-21 | Raw SQLite reddedildi | Lazy observable + sync + migration elle yazmak chat app scope'unda maliyetli |
+| 2026-04-22 | Jira MEKTUP (MEK) is takibi sistemi | Tum is paketleri, karar noktalari ve backlog Jira `MEK` projesinde takip edilir. Epic hiyerarsisi mimari ile hizalandi, detay `.docs/JIRA.md`. Commit + PR MEK-NNN ID ile referansli. |
+| 2026-04-22 | Architecture coverage audit uygulandi | 23 section vs 140 mevcut ticket cross-reference sonucu: 48 yeni Story/Görev + 2 yeni Epic (MEK-201 Backup & Restore, MEK-202 Subscription & Monetization) eklendi. 10 duplicate ticket (MEK-152, 154, 156, 158, 160, 162, 164, 166, 168, 169) ve 12 bos Epic (MEK-18..29) "Tamam" status'una soft-archive edildi. |
 
 ## Musteri kisitlari
 
@@ -168,12 +170,14 @@ _(HexaOps ic urun — dis musteri kisitlari yok; ekle bu tabloya geldiginde)_
 
 ## Acik sorular
 
-- [ ] MVP launch hedef tarihi?
-- [ ] Pricing final (Free/Plus/Pro/Business) — architecture 17.1'deki rakamlar mi geciyor?
-- [ ] AI provider birincil secimi (OpenAI vs. DeepL vs. Anthropic) — cost/quality benchmark gerekli
-- [ ] Voice-preserving TTS regulasyon pozisyonu (EU AI Act, US state laws) — legal review
-- [ ] Channel/Communities v1'de mi v2'de mi? (Architecture section 22'de v2 olarak isaretli, teyit lazim)
-- [ ] Data residency gereksinimi (EU GDPR, TR KVKK) — production region stratejisi buna bagli
+Bu sorulari kapatmak icin her biri Jira'da MVP Karar Noktalari Epic'i (MEK-17) altinda ticket olarak acildi (2026-04-22). Karar alindikca hem buradaki kutu isaretlenir hem ilgili Jira ticket'i **Tamam**'a cekilir.
+
+- [ ] MVP launch hedef tarihi? -> **MEK-195**
+- [ ] Pricing final (Free/Plus/Pro/Business) — architecture 17.1'deki rakamlar mi geciyor? -> **MEK-196**
+- [ ] AI provider birincil secimi (OpenAI vs. DeepL vs. Anthropic) — cost/quality benchmark gerekli -> **MEK-197**
+- [ ] Voice-preserving TTS regulasyon pozisyonu (EU AI Act, US state laws) — legal review -> **MEK-198**
+- [ ] Channel/Communities v1'de mi v2'de mi? (Architecture section 22'de v2 olarak isaretli, teyit lazim) -> **MEK-199**
+- [ ] Data residency gereksinimi (EU GDPR, TR KVKK) — production region stratejisi buna bagli -> **MEK-200**
 
 ## Figma referansi
 
@@ -185,6 +189,8 @@ _(HexaOps ic urun — dis musteri kisitlari yok; ekle bu tabloya geldiginde)_
 - `mektup_architecture.md` — tam mimari (1182 satir)
 - `.docs/WORKFLOW.md` — is akisi
 - `.docs/AGENTS.md` — agent erisim matrisi
+- `.docs/JIRA.md` — Jira proje referansi + Epic haritasi + ticket lifecycle + worklog
+- `.docs/GIT.md` — git workflow standardi (branch, commit, PR, merge)
 - `.docs/TESTPLAN.md` — test seviyeleri
 - `.docs/dev-gotchas.md` — bilinen tuzaklar
 - `.docs/CHANGES.md` — CR log

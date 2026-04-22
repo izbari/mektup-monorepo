@@ -15,9 +15,11 @@
 2. `.docs/CONSTITUTION.md` — ozet + proje kurallari
 3. `.docs/AGENTS.md` — agent sinirlari
 4. `.docs/WORKFLOW.md` — calisma akisi
-5. `.docs/dev-gotchas.md` — bilinen tuzaklar
-6. `.docs/meetings/` altindaki en son `MEETING-*.md` (varsa)
-7. `.specify/specs/` altindaki aktif spec dosyalari
+5. `.docs/JIRA.md` — Jira proje referansi + Epic haritasi + ticket lifecycle + worklog
+6. `.docs/GIT.md` — git standardi (branch, commit, PR, merge)
+7. `.docs/dev-gotchas.md` — bilinen tuzaklar
+8. `.docs/meetings/` altindaki en son `MEETING-*.md` (varsa)
+9. `.specify/specs/` altindaki aktif spec dosyalari
 
 ## Teknoloji stack (mimari karar — degistirme)
 
@@ -54,18 +56,36 @@
 - **Gozlemlenebilirlik:** Sentry (crash + perf), Prometheus + Grafana + Loki (backend), Firebase Performance
 - **Ortamlar:** Dev (her engineer'a Supabase projesi) / Preview (PR-basi ephemeral) / Staging / Production (multi-region)
 
-## Standart akis (speckit + review)
+## Standart akis (speckit + review + Jira)
 1. Toplanti/transkript -> `MEETING-NNN.md` (meeting-agent)
-2. `speckit.specify` — spec taslagi
+2. `speckit.specify` — spec taslagi + **Jira ticket bul/olustur** (uygun MEK-NNN Epic altinda)
 3. `speckit.clarify` — belirsizlikleri kapat
 4. `speckit.plan` — teknik plan (solution-architect)
 5. `speckit.analyze` — tutarlilik kontrolu
-6. `speckit.tasks` — is paketleri
-7. Implementasyon (mobile-agent / web-agent / backend-agent / core-agent)
+6. `speckit.tasks` — is paketleri; **her task bir MEK ticket'ina eslesir**
+7. Implementasyon (mobile-agent / web-agent / backend-agent / core-agent) — **baslarken Jira ticket'i `Devam Ediyor`'a (id=21) al**
 8. UI/UX kontrol (ui-ux-agent, en fazla 3 iterasyon)
 9. Code review (review-agent) ve gerekiyorsa architect review (solution-architect)
 10. QA (qa-engineer)
-11. Merge + EAS Update veya native build
+11. Merge + EAS Update veya native build — **merge sonrasi Jira ticket'i `Tamam`'a (id=31) al**
+
+## Jira entegrasyonu (ozet, detay `.docs/JIRA.md`)
+- **Proje:** MEKTUP (`MEK`), cloudId `27133666-4d2d-4ea8-98ff-3ccd3c39936c`
+- **Commit formati:** `feat(MEK-NNN): kisa aciklama` / `fix(MEK-NNN): ...` — her commit MEK ticket'ina referansli
+- **PR title:** `[MEK-NNN] <kisa aciklama>`
+- **PR body:** architecture/constitution referansi + `Jira: MEK-NNN` satiri
+- **Agent sorumlulugu:** Her agent ise baslarken ilgili MEK ticket'ini **Devam Ediyor**'a, bitirince **Tamam**'a transition eder. Blocker varsa yorum ekler.
+- **Worklog:** Is bittiginde veya oturum sonunda `addWorklogToJiraIssue` ile `timeSpent` ve kisa aciklama girilir (detay `.docs/JIRA.md > Worklog`).
+- **Hard delete yok:** Silme yerine "Tamam" transition (soft-archive). Gercek silme Jira UI'dan manuel.
+- **Yeni kapsam:** Mevcut ticket'i sisirme, yeni ticket ac (uygun Epic'e `parent` ile bagla).
+
+## Git workflow (ozet, detay `.docs/GIT.md`)
+- **Base branch:** `master` — dogrudan push yasak
+- **Feature branch:** `feature/MEK-NNN-kisa-aciklama` (fix/docs/chore/hotfix benzer)
+- **Commit:** Conventional Commits + MEK ID zorunlu: `feat(MEK-190): ...`
+- **PR:** `[MEK-NNN] <aciklama>` title, body'de `Jira: MEK-NNN`
+- **Merge:** squash-and-merge (feature/fix icin) — master'da tek commit = tek ticket
+- **Hotfix:** `hotfix/MEK-NNN-...` master'dan cikar, hizli review + squash merge
 
 ## Ortak kurallar (sozesmesiz ihlali olmaz)
 - **Server plaintext gormez.** Mesaj body'si, reaction metadatasi, medya — hepsi client'ta sifrelenir. Server ciphertext + minimum routing metadata ile calisir.

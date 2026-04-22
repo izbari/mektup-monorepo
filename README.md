@@ -61,11 +61,11 @@ Agent rolleri: `project-manager`, `solution-architect`, `meeting-agent`, `mobile
 ## Is akisi
 
 ```
-toplanti -> MEETING-NNN -> speckit.specify -> clarify -> plan -> analyze -> tasks
--> implement (mobile/web/backend/core) -> ui-ux review -> code review -> QA -> merge -> EAS Update / Build
+toplanti -> MEETING-NNN -> speckit.specify (+ MEK-NNN Jira ticket) -> clarify -> plan -> analyze -> tasks
+-> implement (+ Jira: Devam Ediyor) -> ui-ux review -> code review -> QA -> merge (+ Jira: Tamam) -> EAS Update / Build
 ```
 
-Detay: [`.docs/WORKFLOW.md`](./.docs/WORKFLOW.md).
+Detay: [`.docs/WORKFLOW.md`](./.docs/WORKFLOW.md), Jira: [`.docs/JIRA.md`](./.docs/JIRA.md) (Epic + lifecycle + worklog), Git: [`.docs/GIT.md`](./.docs/GIT.md) (branch + commit + PR + merge).
 
 ## Kritik invariantlar (ihlali olmaz)
 - Server plaintext gormez (body, reaction, medya)

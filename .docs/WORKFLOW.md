@@ -2,35 +2,39 @@
 
 ## Spec'ten deploy'a
 1. **Toplanti/transkript** -> `meeting-agent` -> `.docs/meetings/MEETING-NNN.md`. Acik sorular + musteri kisitlari `CONSTITUTION.md`'ye islenir.
-2. **`speckit.specify`** -> `.specify/specs/NNN-feature/spec.md` taslagi.
+2. **`speckit.specify`** -> `.specify/specs/NNN-feature/spec.md` taslagi. **Jira'da ilgili Epic altinda MEK-NNN ticket bulunur veya olusturulur** (parent Epic baglantisi zorunlu).
 3. **`speckit.clarify`** -> belirsiz gereksinimleri kapat.
 4. **`speckit.plan`** -> solution-architect teknik plan uretir (data-model, contracts, fasing). `mektup_architecture.md` ile tutarlilik kontrolu burada.
 5. **`speckit.analyze`** -> spec + plan coherence.
-6. **`speckit.tasks`** -> domain-basli is paketleri (mobile / web / backend / core / ui-ux).
+6. **`speckit.tasks`** -> domain-basli is paketleri (mobile / web / backend / core / ui-ux). **Her task bir MEK ticket'ina eslesir**; yeni kapsam cikarsa `createJiraIssue` ile yeni ticket (uygun Epic'e `parent` ile).
 7. **Implementation** — agent'lara dagitim (AGENTS.md erisim matrisi).
+   - **Basta:** `transitionJiraIssue` ile MEK ticket'i **Devam Ediyor** (id=21).
    - Bagimli olmayan tasklar paralel.
    - `packages/core` degisikligi tum client agent'lari etkiliyorsa once core, sonra client.
    - Contract-first: API degisiyorsa solution-architect mock kontratla client + server paralel.
+   - Blocker/gerekli karar varsa `addCommentToJiraIssue` ile yorum ekle.
 8. **UI/UX kontrol** (ui-ux-agent) — Figma varsa compliance, yoksa Mode B design decisions. Maks 3 iterasyon.
 9. **Code review** (review-agent) — CONSTITUTION.md + mimari invariantlar + Turkce karakter + event sourcing safety.
 10. **Architect review** — sadece mimari etkisi varsa (yeni pattern, dependency, contract, schema, cross-cutting concern). Paralel review-agent ile.
 11. **Fix cycle** — review bulgusu -> implementing agent'a donus. 3 cycle'dan sonra escalate.
 12. **QA** (qa-engineer) — functional, edge case, Turkce, multi-device convergence, offline scenarios.
 13. **Merge** — review + architect (if needed) + QA signoff zorunlu.
-14. **Deploy:**
+14. **Deploy ve Jira kapatis:**
     - JS-only degisiklik -> EAS Update (OTA, staged rollout)
     - Native degisiklik -> EAS Build -> TestFlight / Internal Track -> %20 staged rollout -> %100 48 saatte
     - Web -> continuous (her merge ile)
     - Backend (Supabase) -> migration CI'da + 30 dk synthetic canary + production
+    - **Merge tamam:** `transitionJiraIssue` ile MEK ticket'i **Tamam** (id=31). Kismen biten is `Devam Ediyor` kalir.
 
 ## Branch ve PR kurallari
 - **Base:** `main`
-- **Feature:** `feature/NNN-kisa-aciklama` (NNN spec numarasi)
-- **Fix:** `fix/NNN-aciklama`
-- **Hotfix:** `hotfix/aciklama` — sadece production incident icin, direkt `main`'den cikar
-- **Spike/prototype:** `spike/konu` — merge edilmez, referans
-- PR title: imperative mood, Turkce ("Mesaj gonderme retry queue'suna exponential backoff ekle")
-- PR description: neyi + neden (CONSTITUTION/architecture referansli) + nasil test edildi
+- **Feature:** `feature/MEK-NNN-kisa-aciklama` (NNN Jira ticket numarasi)
+- **Fix:** `fix/MEK-NNN-aciklama`
+- **Hotfix:** `hotfix/MEK-NNN-aciklama` — sadece production incident icin, direkt `main`'den cikar
+- **Spike/prototype:** `spike/konu` — merge edilmez, referans (Jira ticket gereksiz)
+- **Commit formati:** `feat(MEK-NNN): <imperative kisa aciklama>` / `fix(MEK-NNN): ...` — her commit Jira ticket'ina referansli
+- **PR title:** `[MEK-NNN] <imperative Turkce aciklama>` ("[MEK-190] Mesaj gonderme retry queue'suna exponential backoff ekle")
+- **PR description:** neyi + neden (CONSTITUTION/architecture referansli) + nasil test edildi + `Jira: MEK-NNN` satiri
 - Native native dosyalari (`ios/`, `android/`) asla manuel edit — Expo config plugin uzerinden
 
 ## Degisiklik talebi akisi (CR)
@@ -67,8 +71,22 @@ Her release oncesi:
 - Spec clarify: 2 round belirsizlik kalirsa prompt engineer araya girer
 
 ## Zaman kayitlari
-- Tarih referansi: `.docs/meetings/MEETING-*.md` + `CONSTITUTION.md > Mimari kararlar` + git log.
-- Spec ID + ADO Work Item ID (varsa) commit mesajina eklenir: `feat(NNN): mesaj gonderme worker`.
+- Tarih referansi: `.docs/meetings/MEETING-*.md` + `CONSTITUTION.md > Mimari kararlar` + git log + Jira ticket gecmisi.
+- Spec ID **ve** Jira Ticket ID commit mesajina eklenir: `feat(MEK-190): mesaj gonderme worker exponential backoff`.
+
+## Jira lifecycle (detay `.docs/JIRA.md`)
+- **Ise baslarken:** ilgili MEK ticket'i bul, status'u **Devam Ediyor**'a (id=21) `transitionJiraIssue` ile cevir.
+- **Devam ederken:** blocker, kapsam degisikligi, karar bekleyen nokta varsa `addCommentToJiraIssue` ile yorum ekle — kodda birakma.
+- **Tamamlandiginda:** merge sonrasi `transitionJiraIssue` ile **Tamam**'a (id=31) gec. Kismen biten is `Devam Ediyor` kalir.
+- **Worklog:** Is bittiginde / oturum sonunda `addWorklogToJiraIssue` ile sure + kisa aciklama kaydedilir. Detay: `.docs/JIRA.md > Worklog`.
+- **Yeni kapsam:** mevcut ticket'i sisirme, `createJiraIssue` ile yeni ticket ac (uygun Epic'e `parent` ile bagla).
+- **Hard delete yok:** gereksiz ticket'lar "Tamam" transition'i ile soft-archive edilir; Jira UI'dan manuel silme gerekiyorsa `.docs/JIRA.md`'deki not'a bak.
+
+## Git workflow (detay `.docs/GIT.md`)
+- **Branch:** `feature/MEK-NNN-kisa-aciklama` (fix / docs / chore / hotfix ayri prefix'ler)
+- **master'a direkt push yok** — tum degisiklikler feature branch + PR uzerinden
+- **Merge stratejisi:** squash-and-merge — master'da tek commit = tek MEK ticket
+- **Hotfix:** `master`'dan direkt, hizli review + squash merge + Jira Tamam
 
 ## Not
 - Spec-kit akisi icin `/speckit.specify`, `/speckit.clarify`, `/speckit.plan`, `/speckit.analyze`, `/speckit.tasks`, `/speckit.implement` slash komutlari aktif.
